@@ -5,6 +5,6 @@ import { Component } from '@angular/core';
   templateUrl: './editar.component.html',
   styleUrls: ['./editar.component.scss']
 })
-export class EditarComponent {
+export class EditarTarefaComponent {
 
 }
