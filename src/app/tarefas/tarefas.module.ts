@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TarefaService } from './shared';
-import { ListarComponent } from './listar/listar.component';
-import { CadastrarComponent } from './cadastrar/cadastrar.component';
-import { EditarComponent } from './editar/editar.component';
+import { ListarTarefaComponent } from './listar/listar.component';
+import { CadastrarTarefaComponent } from './cadastrar/cadastrar.component';
+import { EditarTarefaComponent } from './editar/editar.component';
 
 
 
 @NgModule({
   declarations: [
-    ListarComponent,
-    CadastrarComponent,
-    EditarComponent
+    ListarTarefaComponent,
+    CadastrarTarefaComponent,
+    EditarTarefaComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
   ],
   providers: [
     TarefaService
