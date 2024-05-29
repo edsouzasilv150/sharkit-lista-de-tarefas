@@ -6,19 +6,15 @@ import { EditarTarefaComponent } from './editar';
 
 export const TarefaRoutes: Routes = [
   {
-    path: 'tarefas',
-    redirectTo: 'tarefas/listar'
-},
-{
-    path: 'tarefas/listar',
-    component: ListarTarefaComponent
-},
-{
-    path: 'tarefas/cadastrar',
-    component: CadastrarTarefaComponent
-},
-{
-    path: 'tarefas/editar/:id',
-    component: EditarTarefaComponent
-}
+      path: 'listar',
+      component: ListarTarefaComponent
+  },
+  {
+      path: 'cadastrar',
+      component: CadastrarTarefaComponent
+  },
+  {
+      path: 'editar/:id',
+      component: EditarTarefaComponent
+  }
 ]
