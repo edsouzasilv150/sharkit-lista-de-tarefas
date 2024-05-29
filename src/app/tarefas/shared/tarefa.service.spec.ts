@@ -73,11 +73,11 @@ describe('TarefaService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TarefaService);
-    localStorage.clear(); // Limpa o localStorage antes de cada teste
+    localStorage.clear();
   });
 
   afterEach(() => {
-    localStorage.clear(); // Limpa o localStorage após cada teste
+    localStorage.clear();
   });
 
   it('deve adicionar uma nova tarefa a uma lista vazia', (done) => {
@@ -125,11 +125,11 @@ describe('TarefaService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TarefaService);
-    localStorage.clear(); // Limpa o localStorage antes de cada teste
+    localStorage.clear();
   });
 
   afterEach(() => {
-    localStorage.clear(); // Limpa o localStorage após cada teste
+    localStorage.clear();
   });
 
   it('deve retornar uma tarefa existente pelo ID', (done) => {
@@ -182,11 +182,11 @@ describe('TarefaService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TarefaService);
-    localStorage.clear(); // Limpa o localStorage antes de cada teste
+    localStorage.clear();
   });
 
   afterEach(() => {
-    localStorage.clear(); // Limpa o localStorage após cada teste
+    localStorage.clear();
   });
 
   it('deve atualizar uma tarefa existente', (done) => {
@@ -231,11 +231,11 @@ describe('TarefaService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TarefaService);
-    localStorage.clear() //Limpa o localStorage antes de cada teste
+    localStorage.clear()
   });
 
   afterEach(() => {
-    localStorage.clear(); // Limpa o localStorage após cada teste
+    localStorage.clear();
   });
 
   it('deve remover uma tarefa existente pelo ID', (done) => {
@@ -283,11 +283,11 @@ describe('TarefaService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TarefaService);
-    localStorage.clear();  // Limpa o localStorage antes de cada teste
+    localStorage.clear();
   });
 
   afterEach(() => {
-    localStorage.clear();  // Limpa o localStorage após cada teste
+    localStorage.clear();
   });
 
   it('deve alternar o status de conclusão de uma tarefa existente', (done) => {

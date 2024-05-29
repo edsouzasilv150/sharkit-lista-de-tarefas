@@ -37,7 +37,7 @@ export class EditarTarefaComponent implements OnInit {
   atualizar(): void {
     if (this.formTarefa.form.valid) {
       this.tarefaService.atualizar(this.tarefa).subscribe({
-        next: () => this.router.navigate(['/tarefas']),
+        next: () => this.router.navigate(['/listar']),
         error: error => console.error('Erro ao atualizar tarefa', error)
       });
     }

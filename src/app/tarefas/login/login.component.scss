@@ -1,0 +1,24 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 500px;
+  height: 440px;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: darkgray;
+  margin: auto;
+  margin-top: 150px;
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}

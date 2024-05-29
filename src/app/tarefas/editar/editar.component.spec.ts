@@ -30,8 +30,8 @@ describe('EditarTarefaComponent', () => {
     tarefaService = TestBed.inject(TarefaService) as jasmine.SpyObj<TarefaService>;
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
 
-    component.formTarefa = { form: { valid: true } } as any; // Mock do NgForm
-    component.tarefa = new Tarefa(1, 'Tarefa Atualizada', false); // Inicialize a tarefa
+    component.formTarefa = { form: { valid: true } } as any;
+    component.tarefa = new Tarefa(1, 'Tarefa Atualizada', false);
   });
 
   it('deve atualizar a tarefa e navegar na atualização bem-sucedida', fakeAsync(() => {
@@ -42,7 +42,7 @@ describe('EditarTarefaComponent', () => {
     tick();
 
     expect(tarefaService.atualizar).toHaveBeenCalledWith(component.tarefa);
-    expect(router.navigate).toHaveBeenCalledWith(['/tarefas']);
+    expect(router.navigate).toHaveBeenCalledWith(['/listar']);
   }));
 
   it('deve registrar erro se a atualização falhar', fakeAsync(() => {
@@ -58,7 +58,7 @@ describe('EditarTarefaComponent', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao atualizar tarefa', mockError);
   }));
 
-  it('should not update task if form is invalid', () => {
+  it('não deve atualizar a tarefa se o formulário for inválido', () => {
     component.formTarefa = { form: { valid: false } } as NgForm;
 
     component.atualizar();
@@ -88,7 +88,7 @@ describe('EditarTarefaComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: { params: { id: '1' } },
-            paramMap: of({ get: () => '1' }) // Mock do paramMap para simular Observable
+            paramMap: of({ get: () => '1' })
           }
         }
       ]

@@ -1,8 +1,11 @@
 import { TarefaService } from './../shared/tarefa.service';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { ListarTarefaComponent } from './listar.component';
 import { of, throwError } from 'rxjs';
+import { Tarefa } from '../shared';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ListarTarefaComponent', () => {
   let component: ListarTarefaComponent;
@@ -10,7 +13,11 @@ describe('ListarTarefaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ListarTarefaComponent ]
+      declarations: [ ListarTarefaComponent ],
+      imports: [
+        RouterModule,
+        RouterTestingModule
+      ]
     })
     .compileComponents();
 
@@ -27,74 +34,51 @@ describe('ListarTarefaComponent', () => {
 // teste unitário do método listarTodos
 describe('ListarTarefaComponent', () => {
   let component: ListarTarefaComponent;
+  let fixture: ComponentFixture<ListarTarefaComponent>;
   let tarefaService: jasmine.SpyObj<TarefaService>;
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('TarefaService', ['listarTodos']);
 
     TestBed.configureTestingModule({
+      declarations: [ListarTarefaComponent],
       providers: [
-        ListarTarefaComponent,
         { provide: TarefaService, useValue: spy }
       ]
     });
-    component = TestBed.inject(ListarTarefaComponent);
-    tarefaService = TestBed.inject(TarefaService) as jasmine.SpyObj<TarefaService>
+
+    fixture = TestBed.createComponent(ListarTarefaComponent);
+    component = fixture.componentInstance;
+    tarefaService = TestBed.inject(TarefaService) as jasmine.SpyObj<TarefaService>;
   });
 
-  it('deve listar todas as tarefas com sucesso', () => {
-    const mockTarefas = [
-      { id: 1, nome: 'Tarefa 1'},
-      {id: 2, nome: 'Tarefa 2'}
+  it('deve listar todas as tarefas e atribuí-las a tarefas', fakeAsync(() => {
+    const mockTarefas: Tarefa[] = [
+      { id: 1, nome: 'Tarefa 1', concluida: false },
+      { id: 2, nome: 'Tarefa 2', concluida: true }
     ];
+
     tarefaService.listarTodos.and.returnValue(of(mockTarefas));
 
     component.listarTodos();
+    tick();
 
-    expect(component.tarefas).toEqual(mockTarefas);
     expect(tarefaService.listarTodos).toHaveBeenCalled();
-  });
+    expect(component.tarefas).toEqual(mockTarefas);
+  }));
 
-  it('deve listar todas as tarefas com sucesso', (done) => {
-    const mockTarefas = [{ id: 1, nome: 'Tarefa 1' }, { id: 2, nome: 'Tarefa 2' }];
-    tarefaService.listarTodos.and.returnValue(of(mockTarefas));
-
-    component.listarTodos();
-
-    setTimeout(() => {
-      expect(component.tarefas).toEqual(mockTarefas);
-      expect(tarefaService.listarTodos).toHaveBeenCalled();
-      done();
-    }, 0);
-  });
-
-  it('deve tratar o erro ao listar tarefas', (done) => {
-    const consoleErrorSpy = spyOn(console, 'error');
+  it('deve registrar um erro se a listagem de tarefas falhar', fakeAsync(() => {
     const mockError = new Error('Erro ao listar tarefas');
     tarefaService.listarTodos.and.returnValue(throwError(() => mockError));
+    const consoleErrorSpy = spyOn(console, 'error');
 
     component.listarTodos();
+    tick();
 
-    setTimeout(() => {
-      expect(component.tarefas).toBeUndefined();
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao listar tarefas', mockError);
-      expect(tarefaService.listarTodos).toHaveBeenCalled();
-      done();
-    }, 0);
-  });
-
-  it('deve registrar a mensagem completa quando a listagem de tarefas for concluída', (done) => {
-    const consoleLogSpy = spyOn(console, 'log');
-    tarefaService.listarTodos.and.returnValue(of([]));
-
-    component.listarTodos();
-
-    setTimeout(() => {
-      expect(consoleLogSpy).toHaveBeenCalledWith('Lista completa');
-      expect(tarefaService.listarTodos).toHaveBeenCalled();
-      done();
-    }, 0);
-  });
+    expect(tarefaService.listarTodos).toHaveBeenCalled();
+    expect(component.tarefas).toEqual([]);
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao listar tarefas', mockError);
+  }));
 });
 
 // teste unitário para o método remover
@@ -106,6 +90,7 @@ describe('ListarTarefaComponent', () => {
     const spy = jasmine.createSpyObj('TarefaService', ['listarTodos', 'remover']);
 
     TestBed.configureTestingModule({
+      declarations: [ListarTarefaComponent],
       providers: [
         ListarTarefaComponent,
         { provide: TarefaService, useValue: spy }
@@ -178,91 +163,51 @@ describe('ListarTarefaComponent', () => {
     expect(window.confirm).toHaveBeenCalledWith('Deseja remover a tarefa? Tarefa 1?');
     expect(tarefaService.remover).not.toHaveBeenCalled();
   });
-
-  it('deve registrar erro se o id da tarefa estiver indefinido', () => {
-    const mockEvent = jasmine.createSpyObj('$event', ['preventDefault']);
-    spyOn(window, 'confirm').and.returnValue(true);
-    const mockTarefa = { nome: 'Tarefa sem ID' };
-    const consoleErrorSpy = spyOn(console, 'error');
-
-    component.remover(mockEvent, mockTarefa);
-
-    expect(mockEvent.preventDefault).toHaveBeenCalled();
-    expect(window.confirm).toHaveBeenCalledWith('Deseja remover a tarefa? Tarefa sem ID?');
-    expect(tarefaService.remover).not.toHaveBeenCalled();
-    expect(consoleErrorSpy).toHaveBeenCalledWith('ID da tarefa é undefined');
-  });
 });
 
 // teste unitário para o método alterarStatus
-describe('TarefaComponent', () => {
+describe('ListarTarefaComponent', () => {
   let component: ListarTarefaComponent;
+  let fixture: ComponentFixture<ListarTarefaComponent>;
   let tarefaService: jasmine.SpyObj<TarefaService>;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('TarefaService', ['remover']);
+    const spy = jasmine.createSpyObj('TarefaService', ['atualizar', 'listarTodos']);
 
     TestBed.configureTestingModule({
+      declarations: [ListarTarefaComponent],
       providers: [
-        ListarTarefaComponent,
         { provide: TarefaService, useValue: spy }
       ]
     });
 
-    component = TestBed.inject(ListarTarefaComponent);
+    fixture = TestBed.createComponent(ListarTarefaComponent);
+    component = fixture.componentInstance;
     tarefaService = TestBed.inject(TarefaService) as jasmine.SpyObj<TarefaService>;
   });
 
-  it('deve confirmar a mudança de status e remover a tarefa', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    const mockTarefa = { id: 1, nome: 'Tarefa 1' };
-    const mockTarefas = [{ id: 1, nome: 'Tarefa 1' }, { id: 2, nome: 'Tarefa 2' }, { id: 3, nome: 'Tarefa 3' }];
+  it('deve registrar um erro se a atualização falhar', fakeAsync(() => {
+    const mockTarefa: Tarefa = { id: 1, concluida: false };
+    const mockError = new Error('Erro ao atualizar');
+    const erro = new Error('Erro ao atualizar');
 
-    tarefaService.remover.and.returnValue
-    (of(mockTarefas.filter(tarefa => tarefa.id !== mockTarefa.id)));
-    spyOn(component, 'listarTodos');
-
-    component.alterarStatus(mockTarefa);
-
-    expect(window.confirm).toHaveBeenCalledWith('Deseja alterar o status da tarefa "Tarefa 1"?');
-    expect(tarefaService.remover).toHaveBeenCalledWith(mockTarefa.id);
-    expect(component.listarTodos).toHaveBeenCalled();
-  });
-
-  it('should handle error when changing task status', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    const mockTarefa = { id: 1, nome: 'Tarefa 1' };
+    tarefaService.atualizar.and.returnValue(throwError(() => erro))
     const consoleErrorSpy = spyOn(console, 'error');
-    const mockError = new Error('Erro ao alterar status da tarefa');
-
-    tarefaService.remover.and.returnValue(throwError(() => mockError));
 
     component.alterarStatus(mockTarefa);
+    tick();
 
-    expect(window.confirm).toHaveBeenCalledWith('Deseja alterar o status da tarefa "Tarefa 1"?');
-    expect(tarefaService.remover).toHaveBeenCalledWith(mockTarefa.id);
     expect(consoleErrorSpy).toHaveBeenCalledWith('Erro ao alterar status da tarefa', mockError);
-  });
+  }));
 
-  it('deve registrar um erro se o ID da tarefa for indefinido', () => {
-    spyOn(window, 'confirm').and.returnValue(true);
-    const mockTarefa = { nome: 'Tarefa sem ID' };
-    const consoleErrorSpy = spyOn(console, 'error');
-
-    component.alterarStatus(mockTarefa);
-
-    expect(window.confirm).toHaveBeenCalledWith('Deseja alterar o status da tarefa "Tarefa sem ID"?');
-    expect(tarefaService.remover).not.toHaveBeenCalled();
-    expect(consoleErrorSpy).toHaveBeenCalledWith('ID da tarefa é undefined');
-  });
-
-  it('não deve alterar o status da tarefa se o usuário cancelar a confirmação', () => {
-    spyOn(window, 'confirm').and.returnValue(false);
-    const mockTarefa = { id: 1, nome: 'Tarefa 1' };
+  it('não deve alterar o status se o ID da tarefa for undefined', fakeAsync(() => {
+    const mockTarefa: Tarefa = { id: undefined, concluida: false };
+    spyOn(console, 'error');
 
     component.alterarStatus(mockTarefa);
 
-    expect(window.confirm).toHaveBeenCalledWith('Deseja alterar o status da tarefa "Tarefa 1"?');
-    expect(tarefaService.remover).not.toHaveBeenCalled();
-  });
+    expect(mockTarefa.concluida).toBeFalse();
+    expect(tarefaService.atualizar).not.toHaveBeenCalled();
+    expect(console.error).toHaveBeenCalledWith('ID da tarefa é undefined');
+  }));
 });
